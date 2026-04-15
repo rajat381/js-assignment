@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Assignment 4 — CSE 106</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f3ef;
+    color: #1a1a1a;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #111;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 2rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.25rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e5e3dc;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-header {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid #f0ede6;
+  }
+  .card-header .qnum {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #534AB7;
+    margin-bottom: 0.2rem;
+  }
+  .card-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #f0ede6;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #888;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab-btn.active {
+    color: #534AB7;
+    border-bottom: 2px solid #534AB7;
+  }
+  .tab-btn:hover:not(.active) { background: #f8f7f4; }
+  .tab-panel { display: none; padding: 1.1rem 1.25rem; flex: 1; }
+  .tab-panel.active { display: block; }
+
+  /* Code panel */
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    white-space: pre;
+  }
+  .kw  { color: #cba6f7; }
+  .fn  { color: #89b4fa; }
+  .str { color: #a6e3a1; }
+  .num { color: #fab387; }
+  .cm  { color: #6c7086; font-style: italic; }
+  .op  { color: #89dceb; }
+
+  /* Run panel */
+  .run-form { display: flex; flex-direction: column; gap: 0.65rem; }
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.25rem;
+  }
+  .field input {
+    width: 100%;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    background: #faf9f7;
+    color: #111;
+    outline: none;
+    transition: border 0.15s;
+  }
+  .field input:focus { border-color: #7F77DD; background: #fff; }
+  .run-btn {
+    margin-top: 0.4rem;
+    padding: 0.55rem 1.2rem;
+    background: #534AB7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    align-self: flex-start;
+  }
+  .run-btn:hover { background: #4540a0; }
+  .run-btn:active { transform: scale(0.97); }
+  .output-box {
+    margin-top: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    background: #f0f0fc;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #2d2b6b;
+    font-weight: 500;
+    border: 1px solid #d4d0f0;
+    min-height: 2.2rem;
+    display: none;
+  }
+  .output-box.visible { display: block; }
+  .output-box.error { background: #fdf0f0; color: #8b2020; border-color: #e0b0b0; }
+</style>
+</head>
+<body>
+
+<h1>JS Assignment 4 — CSE 106</h1>
+<p class="subtitle">Rajat &nbsp;·&nbsp; 6 questions &nbsp;·&nbsp; View code or run each one</p>
+
+<div class="grid" id="cards"></div>
+
+<script>
+const questions = [
+  {
+    num: "Q1",
+    title: "Digit Gatekeeper",
+    code: `<span class="cm">// Q1 - Digit Gatekeeper</span>
+
+<span class="kw">function</span> <span class="fn">isPrime</span>(n) {
+    <span class="kw">if</span> (n &lt; <span class="num">2</span>) <span class="kw">return false</span>;
+    <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">2</span>; i &lt;= Math.sqrt(n); i++) {
+        <span class="kw">if</span> (n % i === <span class="num">0</span>) <span class="kw">return false</span>;
+    }
+    <span class="kw">return true</span>;
+}
+<span class="kw">function</span> <span class="fn">digitSum</span>(n) {
+    <span class="kw">let</span> sum = <span class="num">0</span>;
+    <span class="kw">while</span> (n &gt; <span class="num">0</span>) {
+        sum += n % <span class="num">10</span>;
+        n = Math.floor(n / <span class="num">10</span>);
+    }
+    <span class="kw">return</span> sum;
+}
+<span class="kw">function</span> <span class="fn">hasZero</span>(n) {
+    <span class="kw">while</span> (n &gt; <span class="num">0</span>) {
+        <span class="kw">if</span> (n % <span class="num">10</span> === <span class="num">0</span>) <span class="kw">return true</span>;
+        n = Math.floor(n / <span class="num">10</span>);
+    }
+    <span class="kw">return false</span>;
+}
+<span class="kw">let</span> L = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter L:"</span>));
+<span class="kw">let</span> R = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter R:"</span>));
+<span class="kw">let</span> K = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter K:"</span>));
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> x = L; x &lt;= R; x++) {
+    <span class="kw">if</span> (x % K === <span class="num">0</span> &amp;&amp; <span class="fn">isPrime</span>(<span class="fn">digitSum</span>(x)) &amp;&amp; !<span class="fn">hasZero</span>(x)) {
+        count++;
+    }
+}
+<span class="fn">alert</span>(count);`,
+    inputs: [
+      { id: "q1_L", label: "L (start of range)", type: "number", placeholder: "e.g. 1" },
+      { id: "q1_R", label: "R (end of range)",   type: "number", placeholder: "e.g. 100" },
+      { id: "q1_K", label: "K (divisor)",         type: "number", placeholder: "e.g. 3" }
+    ],
+    run: function() {
+      function isPrime(n) {
+        if (n < 2) return false;
+        for (let i = 2; i <= Math.sqrt(n); i++) if (n % i === 0) return false;
+        return true;
+      }
+      function digitSum(n) {
+        let s = 0; while (n > 0) { s += n % 10; n = Math.floor(n/10); } return s;
+      }
+      function hasZero(n) {
+        while (n > 0) { if (n % 10 === 0) return true; n = Math.floor(n/10); } return false;
+      }
+      const L = parseInt(document.getElementById('q1_L').value);
+      const R = parseInt(document.getElementById('q1_R').value);
+      const K = parseInt(document.getElementById('q1_K').value);
+      if (isNaN(L)||isNaN(R)||isNaN(K)||K===0) return {err:"Please enter valid integers (K ≠ 0)"};
+      if (R - L > 1000000) return {err:"Range too large (max 1,000,000 for browser)"};
+      let count = 0;
+      for (let x = L; x <= R; x++) {
+        if (x % K === 0 && isPrime(digitSum(x)) && !hasZero(x)) count++;
+      }
+      return {out: `Count = ${count}`};
+    }
+  },
+  {
+    num: "Q2",
+    title: "Roll-Seed Lock",
+    code: `<span class="cm">// Q2 - Roll-Seed Lock</span>
+
+<span class="kw">let</span> N    = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter N:"</span>));
+<span class="kw">let</span> seed = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter seed:"</span>));
+
+<span class="kw">let</span> current = N;
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) {
+    <span class="kw">if</span> (current % <span class="num">2</span> === <span class="num">0</span>) {
+        current = current / <span class="num">2</span> + seed;
+    } <span class="kw">else</span> {
+        current = current * <span class="num">3</span> - seed;
+    }
+}
+<span class="kw">let</span> middleDigit = Math.floor(current / <span class="num">10</span>) % <span class="num">10</span>;
+
+<span class="kw">if</span> (current &gt;= <span class="num">100</span> &amp;&amp; current &lt;= <span class="num">999</span> &amp;&amp; middleDigit === seed) {
+    <span class="fn">alert</span>(<span class="str">"YES, "</span> + current);
+} <span class="kw">else</span> {
+    <span class="fn">alert</span>(<span class="str">"NO, "</span> + current);
+}`,
+    inputs: [
+      { id: "q2_N",    label: "N (starting number)", type: "number", placeholder: "e.g. 12" },
+      { id: "q2_seed", label: "Seed",                type: "number", placeholder: "e.g. 3" }
+    ],
+    run: function() {
+      const N    = parseInt(document.getElementById('q2_N').value);
+      const seed = parseInt(document.getElementById('q2_seed').value);
+      if (isNaN(N)||isNaN(seed)) return {err:"Please enter valid integers"};
+      let current = N;
+      for (let i = 0; i < 3; i++) {
+        current = (current % 2 === 0) ? current/2 + seed : current*3 - seed;
+      }
+      const mid = Math.floor(current/10) % 10;
+      const ok = current >= 100 && current <= 999 && mid === seed;
+      return {out: `${ok ? "YES" : "NO"}, ${current}   (middle digit = ${mid})`};
+    }
+  },
+  {
+    num: "Q3",
+    title: "Mirror Corridor",
+    code: `<span class="cm">// Q3 - Mirror Corridor</span>
+
+<span class="kw">function</span> <span class="fn">isPalindrome</span>(n) {
+    <span class="kw">let</span> orig = n.toString();
+    <span class="kw">let</span> rev  = orig.split(<span class="str">""</span>).reverse().join(<span class="str">""</span>);
+    <span class="kw">return</span> orig === rev;
+}
+<span class="kw">let</span> N = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter N:"</span>));
+<span class="kw">let</span> K = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter K:"</span>));
+
+<span class="kw">let</span> result = <span class="op">-</span><span class="num">1</span>;
+<span class="kw">for</span> (<span class="kw">let</span> X = <span class="num">0</span>; X &lt;= <span class="num">100000</span>; X++) {
+    <span class="kw">let</span> candidate = N + X;
+    <span class="kw">if</span> (<span class="fn">isPalindrome</span>(candidate) &amp;&amp; candidate % K === <span class="num">0</span>) {
+        result = X;
+        <span class="kw">break</span>;
+    }
+}
+<span class="fn">alert</span>(result);`,
+    inputs: [
+      { id: "q3_N", label: "N (starting number)", type: "number", placeholder: "e.g. 100" },
+      { id: "q3_K", label: "K (divisor)",         type: "number", placeholder: "e.g. 11" }
+    ],
+    run: function() {
+      function isPalindrome(n) {
+        const s = n.toString(); return s === s.split('').reverse().join('');
+      }
+      const N = parseInt(document.getElementById('q3_N').value);
+      const K = parseInt(document.getElementById('q3_K').value);
+      if (isNaN(N)||isNaN(K)||K===0) return {err:"Please enter valid integers (K ≠ 0)"};
+      let result = -1;
+      for (let X = 0; X <= 100000; X++) {
+        const c = N + X;
+        if (isPalindrome(c) && c % K === 0) { result = X; break; }
+      }
+      if (result === -1) return {out: "No solution found within X ≤ 100000"};
+      return {out: `X = ${result}   →   ${N} + ${result} = ${N+result} (palindrome, divisible by ${K})`};
+    }
+  },
+  {
+    num: "Q4",
+    title: "Fare Calculator",
+    code: `<span class="cm">// Q4 - Fare Calculator</span>
+
+<span class="kw">let</span> base        = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter base:"</span>));
+<span class="kw">let</span> distance    = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter distance:"</span>));
+<span class="kw">let</span> minutesLate = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter minutesLate:"</span>));
+<span class="kw">let</span> seed        = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter seed:"</span>));
+<span class="kw">let</span> fare = base + <span class="num">7</span> * distance;
+
+<span class="kw">if</span> (minutesLate &gt; <span class="num">15</span>) {
+    fare = fare + <span class="num">20</span>;
+}
+<span class="kw">if</span> (distance &gt; <span class="num">10</span>) {
+    fare = fare + Math.floor(<span class="num">0.10</span> * fare);
+}
+<span class="kw">if</span> (seed % <span class="num">2</span> !== <span class="num">0</span>) {
+    fare = fare - seed;
+} <span class="kw">else</span> {
+    fare = fare + seed;
+}
+<span class="kw">if</span> (fare % <span class="num">5</span> !== <span class="num">0</span>) {
+    fare = fare + (<span class="num">5</span> - (fare % <span class="num">5</span>));
+}
+<span class="fn">alert</span>(fare);`,
+    inputs: [
+      { id: "q4_base",  label: "Base fare",           type: "number", placeholder: "e.g. 50" },
+      { id: "q4_dist",  label: "Distance (km)",        type: "number", placeholder: "e.g. 12" },
+      { id: "q4_late",  label: "Minutes late",         type: "number", placeholder: "e.g. 20" },
+      { id: "q4_seed",  label: "Seed",                 type: "number", placeholder: "e.g. 3" }
+    ],
+    run: function() {
+      const base  = parseInt(document.getElementById('q4_base').value);
+      const dist  = parseInt(document.getElementById('q4_dist').value);
+      const late  = parseInt(document.getElementById('q4_late').value);
+      const seed  = parseInt(document.getElementById('q4_seed').value);
+      if ([base,dist,late,seed].some(isNaN)) return {err:"Please fill all fields"};
+      let fare = base + 7 * dist;
+      if (late > 15)  fare += 20;
+      if (dist > 10)  fare += Math.floor(0.10 * fare);
+      fare = (seed % 2 !== 0) ? fare - seed : fare + seed;
+      if (fare % 5 !== 0) fare += (5 - (fare % 5));
+      return {out: `Final fare = ${fare}`};
+    }
+  },
+  {
+    num: "Q5",
+    title: "Skipping Numbers",
+    code: `<span class="cm">// Q5 - Skipping Numbers</span>
+
+<span class="kw">function</span> <span class="fn">findM</span>(N, seed) {
+    <span class="kw">let</span> m = <span class="num">0</span>;
+    <span class="kw">let</span> currentSum = <span class="num">0</span>;
+    <span class="kw">let</span> divisor = seed + <span class="num">2</span>;
+
+    <span class="kw">while</span> (currentSum &lt; N) {
+        m++;
+        <span class="kw">if</span> (m % divisor !== <span class="num">0</span>) {
+            currentSum += m;
+        }
+    }
+
+    console.log(<span class="str">"Value of m: "</span> + m);
+    console.log(<span class="str">"Computed sum: "</span> + currentSum);
+}`,
+    inputs: [
+      { id: "q5_N",    label: "N (target sum)", type: "number", placeholder: "e.g. 30" },
+      { id: "q5_seed", label: "Seed",           type: "number", placeholder: "e.g. 3" }
+    ],
+    run: function() {
+      const N    = parseInt(document.getElementById('q5_N').value);
+      const seed = parseInt(document.getElementById('q5_seed').value);
+      if (isNaN(N)||isNaN(seed)) return {err:"Please enter valid integers"};
+      if (N > 10000000) return {err:"N too large (max 10,000,000)"};
+      const divisor = seed + 2;
+      let m = 0, sum = 0;
+      while (sum < N) {
+        m++;
+        if (m % divisor !== 0) sum += m;
+      }
+      return {out: `m = ${m},   computed sum = ${sum}   (skipping multiples of ${divisor})`};
+    }
+  },
+  {
+    num: "Q6",
+    title: "Contest Score Judge",
+    code: `<span class="cm">// Q6 - Contest Score Judge</span>
+
+<span class="kw">let</span> a = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter correct answers (a):"</span>));
+<span class="kw">let</span> b = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter partially correct (b):"</span>));
+<span class="kw">let</span> c = <span class="fn">parseInt</span>(<span class="fn">prompt</span>(<span class="str">"Enter wrong answers (c):"</span>));
+
+<span class="kw">let</span> score = <span class="num">3</span> * a + b - <span class="num">2</span> * c;
+<span class="kw">if</span> (score &lt; <span class="num">0</span>) {
+    score = <span class="num">0</span>;
+}
+<span class="kw">if</span> (a + b + c &gt; <span class="num">50</span>) {
+    score = score - <span class="num">10</span>;
+}
+<span class="kw">let</span> status = (score &gt;= <span class="num">60</span>) ? <span class="str">"PASS"</span> : <span class="str">"FAIL"</span>;
+
+<span class="fn">alert</span>(score + <span class="str">", "</span> + status);`,
+    inputs: [
+      { id: "q6_a", label: "Correct answers (a)",          type: "number", placeholder: "e.g. 20" },
+      { id: "q6_b", label: "Partially correct answers (b)", type: "number", placeholder: "e.g. 5" },
+      { id: "q6_c", label: "Wrong answers (c)",             type: "number", placeholder: "e.g. 3" }
+    ],
+    run: function() {
+      const a = parseInt(document.getElementById('q6_a').value);
+      const b = parseInt(document.getElementById('q6_b').value);
+      const c = parseInt(document.getElementById('q6_c').value);
+      if ([a,b,c].some(isNaN)) return {err:"Please fill all fields"};
+      let score = 3*a + b - 2*c;
+      if (score < 0) score = 0;
+      if (a+b+c > 50) score -= 10;
+      const status = score >= 60 ? "PASS" : "FAIL";
+      return {out: `Score = ${score},  Status = ${status}`};
+    }
+  }
+];
+
+function buildCard(q, idx) {
+  const id = `q${idx+1}`;
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="qnum">${q.num}</div>
+      <h2>${q.title}</h2>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('${id}','code',this)">&#128196; Code</button>
+      <button class="tab-btn" onclick="switchTab('${id}','run',this)">&#9654; Run</button>
+    </div>
+    <div id="${id}-code" class="tab-panel active">
+      <pre>${q.code}</pre>
+    </div>
+    <div id="${id}-run" class="tab-panel">
+      <div class="run-form">
+        ${q.inputs.map(inp => `
+          <div class="field">
+            <label for="${inp.id}">${inp.label}</label>
+            <input id="${inp.id}" type="${inp.type}" placeholder="${inp.placeholder}" />
+          </div>
+        `).join('')}
+        <button class="run-btn" onclick="runQ(${idx})">Run &#9654;</button>
+        <div id="${id}-out" class="output-box"></div>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+function switchTab(qid, panel, btn) {
+  document.getElementById(`${qid}-code`).classList.remove('active');
+  document.getElementById(`${qid}-run`).classList.remove('active');
+  document.getElementById(`${qid}-${panel}`).classList.add('active');
+  btn.closest('.tabs').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function runQ(idx) {
+  const q   = questions[idx];
+  const out = document.getElementById(`q${idx+1}-out`);
+  let res;
+  try { res = q.run(); }
+  catch(e) { res = {err: e.message}; }
+
+  out.classList.remove('error');
+  if (res.err) {
+    out.textContent = '⚠ ' + res.err;
+    out.classList.add('error');
+  } else {
+    out.textContent = '→  ' + res.out;
+  }
+  out.classList.add('visible');
+}
+
+const grid = document.getElementById('cards');
+questions.forEach((q, i) => grid.appendChild(buildCard(q, i)));
+</script>
+</body>
+</html>
