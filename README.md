@@ -1,5 +1,4 @@
 js-assignment 4 (cse 106)
-here's the stuff for assignment 4. barely surviving this 2nd semester tbh, just trying to get this out of the way before end sems start creeping up on may 28th.
 
 ## Files
 | File | Question |
